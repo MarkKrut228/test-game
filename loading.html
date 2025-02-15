@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="uk">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Game Loading</title>
+    <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
+    <style>
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+            height: 100vh;
+            background: url('/photo/fon-loading.jpeg') no-repeat center center/cover;
+            background-color: rgba(0, 0, 0, 0.5);
+            background-blend-mode: darken;
+            color: white;
+            font-family: 'Press Start 2P', cursive;
+        }
+
+        .loading-text {
+            font-size: 32px;
+            font-weight: bold;
+            color: #ffd700;
+            text-shadow: 2px 2px 10px rgba(255, 215, 0, 0.8);
+            margin-bottom: 20px;
+            position: relative;
+            transition: font-size 0.3s ease;
+        }
+
+        .loading-text::after {
+            content: '...';
+            display: inline-block;
+            animation: dots 1.5s steps(3, end) infinite;
+        }
+
+        @keyframes dots {
+            0% {
+                content: '';
+            }
+
+            33% {
+                content: '.';
+            }
+
+            66% {
+                content: '..';
+            }
+
+            100% {
+                content: '...';
+            }
+        }
+
+        .play-button {
+            padding: 15px 30px;
+            font-size: 20px;
+            background-color: #ff9800;
+            border: none;
+            color: white;
+            cursor: pointer;
+            border-radius: 10px;
+            font-family: 'Press Start 2P', cursive;
+            transition: transform 0.3s ease, font-size 0.3s ease;
+        }
+
+        .play-button:hover {
+            background-color: #e68900;
+        }
+
+        @media (max-width: 600px) {
+            .loading-text {
+                font-size: 24px;
+            }
+
+            .play-button {
+                font-size: 24px;
+                transform: scale(1.1);
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="loading-text">Завантаження</div>
+    <button class="play-button" onclick="startGame()">▶ Play</button>
+
+    <script>
+        function startGame() {
+            document.documentElement.requestFullscreen().catch(err => {
+                console.log("Помилка повноекранного режиму: ", err);
+            });
+            window.location.href = "game.html"; // Перехід на основну сторінку гри
+        }
+    </script>
+</body>
+
+</html>
