@@ -16,21 +16,141 @@
             width: 100vw;
             background: url('photo/fon-game.jpg') no-repeat center center;
             background-size: cover;
+            overflow: hidden;
         }
-    
-    .cat {
+
+        .cat {
             position: absolute;
             width: 128px;
             height: 158px;
             background: url('photo/cat-game.png') no-repeat;
             background-size: 640px 1280px;
             image-rendering: pixelated;
+            transition: transform 0.5s linear, left 0.5s linear, top 0.5s linear;
         }
     </style>
 </head>
 
 <body>
+    <div class="cat"></div>
 
+    <script>
+        const cat = document.querySelector('.cat');
+        let isSitting = false;
+        let isClicked = false;
+        let frame = 0;
+        let direction = 0;
+        let speed = 0.7;
+        let lastDirection = -1;
+        let repeatMove = false;
+        let walkTimeout;
+        let restTimeout;
+
+        const startX = window.innerWidth / 2 - 64;
+        const startY = window.innerHeight * 0.7;
+        cat.style.left = `${startX}px`;
+        cat.style.top = `${startY}px`;
+
+        function setAnimation(row) {
+            cat.style.backgroundPositionY = `-${row * 168}px`;
+        }
+
+        function walk() {
+            if (isSitting) return;
+            frame = (frame + 1) % 4;
+            cat.style.backgroundPositionX = `-${frame * 168}px`;
+        }
+
+        function moveCat() {
+            if (isSitting || isClicked) return;
+
+            let x = cat.offsetLeft;
+            let y = cat.offsetTop;
+
+            if (repeatMove) {
+                direction = lastDirection; // Повторюємо попередній напрямок
+                repeatMove = false;
+            } else {
+                direction = Math.floor(Math.random() * 4); // Випадковий напрямок
+                if ((direction === 1 || direction === 3) && Math.random() < 0.6) {
+                    repeatMove = true; // 40% шанс повторити хід
+                    lastDirection = direction;
+                }
+            }
+
+            const step = 20;
+
+            switch (direction) {
+                case 0: // Вниз
+                    y += step;
+                    setAnimation(0);
+                    cat.style.transform = "scale(1,1)";
+                    break;
+                case 1: // Вправо
+                    x += step;
+                    setAnimation(1);
+                    cat.style.transform = "scale(1,1)";
+                    break;
+                case 2: // Вверх
+                    y -= step;
+                    setAnimation(2);
+                    cat.style.transform = "scale(1,1)";
+                    break;
+                case 3: // Вліво
+                    x -= step;
+                    setAnimation(3);
+                    cat.style.transform = "scale(1,1)";
+                    break;
+            }
+
+            const minY = window.innerHeight * 0.7;
+            const maxY = window.innerHeight * 0.95 - 128;
+            x = Math.max(0, Math.min(window.innerWidth - 128, x));
+            y = Math.max(minY, Math.min(maxY, y));
+
+            cat.style.transition = `top ${speed}s linear, left ${speed}s linear`;
+            cat.style.left = `${x}px`;
+            cat.style.top = `${y}px`;
+        }
+
+        function toggleSit() {
+            if (isSitting) {
+                isSitting = false;
+                isClicked = false;
+                startWalkingCycle();
+            } else {
+                isSitting = true;
+                isClicked = true;
+                clearTimeout(walkTimeout);
+                clearTimeout(restTimeout);
+                setAnimation(4);
+            }
+        }
+
+        function startWalkingCycle() {
+            if (isClicked) return;
+
+            let walkTime = Math.floor(Math.random() * (120000 - 40000) + 40000);
+            let restTime = Math.floor(Math.random() * (14000 - 8000) + 8000);
+
+            walkTimeout = setTimeout(() => {
+                isSitting = true;
+                setAnimation(4);
+
+                restTimeout = setTimeout(() => {
+                    isSitting = false;
+                    startWalkingCycle();
+                }, restTime);
+            }, walkTime);
+        }
+
+        cat.addEventListener('click', toggleSit);
+
+        setInterval(walk, 300);
+        setInterval(moveCat, 1500);
+
+        startWalkingCycle();
+    </script>
 </body>
 
 </html>

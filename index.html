@@ -27,7 +27,6 @@
             text-shadow: 2px 2px 10px rgba(255, 215, 0, 0.8);
             margin-bottom: 20px;
             position: relative;
-            transition: font-size 0.3s ease;
         }
 
         .loading-text::after {
@@ -63,7 +62,7 @@
             cursor: pointer;
             border-radius: 10px;
             font-family: 'Press Start 2P', cursive;
-            transition: transform 0.3s ease, font-size 0.3s ease;
+            transition: transform 0.3s ease;
         }
 
         .play-button:hover {
@@ -88,11 +87,30 @@
     <button class="play-button" onclick="startGame()">▶ Play</button>
 
     <script>
-        function startGame() {
-            document.documentElement.requestFullscreen().catch(err => {
-                console.log("Помилка повноекранного режиму: ", err);
-            });
-            window.location.href = "game.html"; // Перехід на основну сторінку гри
+        async function startGame() {
+            try {
+                // Перехід у повноекранний режим
+                if (document.documentElement.requestFullscreen) {
+                    await document.documentElement.requestFullscreen();
+                } else if (document.documentElement.mozRequestFullScreen) {
+                    await document.documentElement.mozRequestFullScreen();
+                } else if (document.documentElement.webkitRequestFullscreen) {
+                    await document.documentElement.webkitRequestFullscreen();
+                } else if (document.documentElement.msRequestFullscreen) {
+                    await document.documentElement.msRequestFullscreen();
+                }
+
+                // Блокування екрану в горизонтальному режимі
+                if (screen.orientation && screen.orientation.lock) {
+                    await screen.orientation.lock("landscape");
+                }
+
+                // Перехід до гри
+                window.location.href = "game.html";
+            } catch (err) {
+                console.log("Помилка зміни орієнтації або повноекранного режиму:", err);
+                window.location.href = "game.html"; // Все одно переходимо в гру
+            }
         }
     </script>
 </body>
